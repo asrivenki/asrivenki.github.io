@@ -1,0 +1,64 @@
+<html>
+<script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<body bgcolor="#4e63c9">
+<center> <h2>Please select the option to Visualize </h2></center>
+<div id="pieChart"></div>
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+ul {
+    border: 1px solid black;
+}
+
+li {
+    text-align: center;
+    border-bottom: 1px solid #555;
+}
+
+li:last-child {
+    border-bottom: none;
+}
+li a {
+    display: block;
+    color: #000;
+    padding: 8px 0 8px 16px;
+    text-decoration: none;
+}
+
+/* Change the link color on hover */
+li a:hover {
+    background-color: #555;
+    color: white;
+}
+
+</style>
+<ul>
+  <li><a href = "class_query_manipulation.html"> Class query manipulation </a></li>
+  <li><a href = "class_operation_manipulation.html"> Class Operation manipulation </a></li>
+  
+</ul>
+<div>
+   <center> Developed a socially interactive web-app with the given datasets: class_query.csv and class_operation.csv </center>
+   <center><h3>Analysis & Findings </h3></center>
+     *<b> Finding 1: </b> Main intention of all users is "Knowledge Seeking" and Count is <b>285</b>. This implies that most of the people query in StackOverFlow for Knowledge Seeking purpose <br>
+     *<b> Finding 2: </b> Min intention by all users is "Method Learning" and Count is <b>92</b>. This implies that most of the people do not query for method learning.<br>
+     *<b> Finding 3: </b> Max operation by all users is "scroll_down" and Count is <b>443067</b>. This implies that maximum users scroll_down in stackoverflow. Scroll Down can be to read a page or to skim through.<br>
+     *<b> Finding 4: </b> Min operation by all users is "select" and Count is <b>905</b>. Least number of users select the text. Users select a text only when they need to copy the text or to search a similar question in stackoverflow or other websites.<br>
+     *<b> Finding 5: </b> Found the main intention of each user. This can found when navigating to class_query.<br>
+     *<b> Finding 6: </b> Found the least intention of each user. This can found when navigating to class_query.<br>
+     *<b> Finding 7: </b> Found the maximum intention of each user. This can found when navigating to class_operation.<br>
+     *<b> Finding 8: </b> Found the least operation of each user. This can found when navigating to class_operation.<br>
+
+</div>
+<div>
+    <center><h3> Interactivity </h3></center>
+     * Mouse Hovering over Pie Chart <br>
+     * Click on Pie value to expand it <br>
+     * Select the user Uid dynamically <br>
+     * Hyperlink to different visualizations<br>
+     * Mouse hovering over hyperlink value
+</div>
+
+
+</body>
+</html>

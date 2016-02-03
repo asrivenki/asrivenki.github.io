@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<style type="text/css">
+p {
+
+    background-color: lightgrey;
+}
+
+</style>
+<body>
+
+<div>
+	<center> <h4> When you select the user, the pie chart for this user is appended to the output for social visualization</h4></center>	
+	<center> <h4> Please wait for the extreme large data to be computed .... </h4></center>
+</div>
+
+<div>
+	<p align = "center" style="display: block; color: green;" id="intention_max_all_user"></p>
+</div>
+
+<div>
+	<p align = "center" style="display: block; color: red;" id="intention_min_all_user"></p>
+</div>
+
+<div>
+	<p align ="center" style="display: block; color: green;" id = "intention_max_per_user"></p>
+</div>
+
+<div>
+	<p align = "center" style="display: block; color: red;" id="intention_min_per_user"></p>
+</div>
+
+<div>
+	<center> <h3>Please select the User ID </h3></center>
+</div>
+
+<div align = "center" id="sel"></div>
+
+<div id="pieChart"></div>
+
+<script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="d3pie.js"></script>
+<script>
+
+
+d3.csv("class_operation.csv", function(error, data) {
+    
+var select = d3.select("#sel")
+      //.append("div")
+      .append("select")
+
+    
+     // data.unique();
+    select.selectAll("option")
+      .data(d3.map(data, function(d){return d.u_id;}).keys())
+      .enter()
+        .append("option")
+        .attr("value", function (d) { return d; })
+        .text(function (d) { return d; });
+
+var Count = d3.nest()
+  .key(function(d) { return d.u_id; })
+  .rollup(function(v) { return v.operation; })
+  .entries(data);
+
+console.log(Count);
+
+
+var color_box = ['#FFCC00', '#FFFF00', '#CCFF00', '#99FF00', '#33FF00', '#00FF66', '#00FF99', '#00FFCC', '#FF0000', '#FF3300', '#FF6600', '#FF9900']; 
+
+var counts = {};
+var keys=[];
+
+
+
+data.forEach(function(r) {
+//var temp=r.target;
+
+var key = r.u_id + r.operation;
+ // keys.push(key);
+if(keys.indexOf(key)<0){ keys.push(key);}
+    if (!counts[key]) 
+    {
+       
+        counts[key] = {
+           u_id: r.u_id,
+           operation: r.operation,
+           count: 0
+        };
+    }
+    counts[key].count++;
+
+ //console.log(counts[key].operation + " " + counts[key].count);
+ //document.write("<br>"+r.u_id+""+counts[key].count);
+});
+
+var counts_social = {};
+var keys_social=[];
+
+
+data.forEach(function(r) {
+//var temp=r.target;
+
+var key = r.operation;
+ // keys.push(key);
+if(keys_social.indexOf(key)<0){ keys_social.push(key);}
+    if (!counts_social[key]) 
+    {
+       
+        counts_social[key] = {
+           operation: r.operation,
+           count: 0
+        };
+    }
+    counts_social[key].count++;
+   // console.log(counts_social[key].operation + " " +counts_social[key].count);
+
+ //document.write("<br>"+r.u_id+""+counts[key].count);
+});
+
+var arrContent_social = [];
+
+for(var x=0, i = 0; x<keys_social.length; x++,i++){
+
+  arrContent_social.push({"label":counts_social[keys_social[x]].operation,"value":counts_social[keys_social[x]].count,"color": color_box[i]});
+  //console.log(counts_social[keys_social[x]].operation +counts_social[keys_social[x]].count);
+}
+
+var max_count = 0;
+var max_intention;
+var min_count = 9999999;
+var min_intention;
+
+for(var x=0, i = 0; x<keys_social.length; x++,i++){
+    if(counts_social[keys_social[x]].count > max_count)
+    {
+    	max_count = counts_social[keys_social[x]].count;
+    	max_intention = counts_social[keys_social[x]].operation;
+    }
+    if(counts_social[keys_social[x]].count < min_count)
+    {
+    	min_count = counts_social[keys_social[x]].count;
+    	min_intention = counts_social[keys_social[x]].operation;
+    }
+  //
+  //console.log(counts_social[keys_social[x]].intention +counts_social[keys_social[x]].count);
+}
+
+
+document.getElementById('intention_max_all_user').innerHTML = "Finding 1: Maximum operation by all users is " + max_intention + " and Count is " + max_count + ". This implies that most of the time people spend in StackOverFlow for " + max_intention + " purpose";
+
+document.getElementById('intention_min_all_user').innerHTML = "Finding 2: Least operation by all users is " + min_intention + " and Count is " + min_count +" . This implies that most of the people do not perform " + min_intention;
+
+
+
+
+select
+      .on("change", function(d) {
+      //	location.reload();
+      var arrContent = [];
+	  var value = d3.select(this).property("value");
+
+var max_count_user = 0;
+var max_intention_user;
+
+var min_count_user = 9999999;
+var min_intention_user;
+
+for(var x=0, i = 0;x<keys.length;x++,i++){
+if(keys[x].match(value)){
+	if(counts[keys[x]].count > max_count_user)
+	    {
+	    	max_count_user = counts[keys[x]].count;
+	    	max_intention_user = counts[keys[x]].operation;
+	    	console.log(counts[keys[x]].intention + " "+counts[keys[x]].count);
+	    }
+
+	    if(counts[keys[x]].count < min_count_user)
+	    {
+	    	min_count_user = counts[keys[x]].count;
+	    	min_intention_user = counts[keys[x]].operation;
+	    }
+  arrContent.push({"label":counts[keys[x]].operation,"value":counts[keys[x]].count,"color": color_box[i]});
+//  console.log(datanew[i].operation + " " + datanew[i].count); 
+}
+}
+
+
+
+var pie = new d3pie("pieChart", {
+	"header": {
+		"title": {
+			"text": "Operation Distribution for " + value,
+			"fontSize": 22,
+			"font": "georgia"
+		},
+		"subtitle": {
+			"text": " Distribution of the operations of User in query search ",
+			"color": "#999999",
+			"fontSize": 10,
+			"font": "lucida sans"
+		},
+		"titleSubtitlePadding": 12
+	},
+	"footer": {
+		"text": "Source: class_operation.csv",
+		"color": "#999999",
+		"fontSize": 11,
+		"font": "open sans",
+		"location": "bottom-center"
+	},
+	"size": {
+		"canvasHeight": 400,
+		"canvasWidth": 590,
+		"pieInnerRadius": "18%",
+		"pieOuterRadius": "88%"
+	},
+	"data": {
+		"smallSegmentGrouping": {
+			"enabled": true
+		},
+		"content": arrContent
+	},
+	"labels": {
+		"outer": {
+			"pieDistance": 32
+		},
+		"inner": {
+			"format": "value"
+		},
+		"mainLabel": {
+			"font": "verdana"
+		},
+		"percentage": {
+			"color": "#e1e1e1",
+			"font": "verdana",
+			"decimalPlaces": 0
+		},
+		"value": {
+			"color": "#e1e1e1",
+			"font": "verdana"
+		},
+		"lines": {
+			"enabled": true,
+			"color": "#cccccc"
+		},
+		"truncation": {
+			"enabled": true
+		}
+	},
+	"tooltips": {
+		"enabled": true,
+		"type": "placeholder",
+		"string": "{label}: {value}, {percentage}%"
+	},
+	"effects": {
+		"pullOutSegmentOnClick": {
+			"effect": "linear",
+			"speed": 400,
+			"size": 8
+		}
+	}
+});
+
+
+var pie_social = new d3pie("pieChart", {
+	"header": {
+		"title": {
+			"text": "Operation Distribution of all users",
+			"fontSize": 22,
+			"font": "georgia"
+		},
+		"subtitle": {
+			"text": " Distribution of the operation of all Users in query search ",
+			"color": "#999999",
+			"fontSize": 10,
+			"font": "lucida sans"
+		},
+		"titleSubtitlePadding": 12
+	},
+	"footer": {
+		"text": "Source: class_operation.csv",
+		"color": "#999999",
+		"fontSize": 11,
+		"font": "open sans",
+		"location": "bottom-center"
+	},
+	"size": {
+		"canvasHeight": 400,
+		"canvasWidth": 590,
+		"pieInnerRadius": "18%",
+		"pieOuterRadius": "88%"
+	},
+	"data": {
+		"smallSegmentGrouping": {
+			"enabled": true
+		},
+		"content": arrContent_social
+	},
+	"labels": {
+		"outer": {
+			"pieDistance": 32
+		},
+		"inner": {
+			"format": "value"
+		},
+		"mainLabel": {
+			"font": "verdana"
+		},
+		"percentage": {
+			"color": "#e1e1e1",
+			"font": "verdana",
+			"decimalPlaces": 0
+		},
+		"value": {
+			"color": "#e1e1e1",
+			"font": "verdana"
+		},
+		"lines": {
+			"enabled": true,
+			"color": "#cccccc"
+		},
+		"truncation": {
+			"enabled": true
+		}
+	},
+	"tooltips": {
+		"enabled": true,
+		"type": "placeholder",
+		"string": "{label}: {value}, {percentage}%"
+	},
+	"effects": {
+		"pullOutSegmentOnClick": {
+			"effect": "linear",
+			"speed": 400,
+			"size": 8
+		}
+	}
+});
+
+document.getElementById("intention_max_per_user").innerHTML = "Finding 3: Maximum operation of user " + value +" is " + max_intention_user + " and Count is " + max_count_user +". This implies that the user spend most of his time in StackOverFlow by " + max_intention_user;
+document.getElementById("intention_min_per_user").innerHTML = "Finding 4: Least operation of user" + value +" is " + min_intention_user + " and Count is " + min_count_user + ". The user does spend minimum time in " + min_intention_user;
+
+});
+
+
+});
+
+
+</script>
+
+
+</body>
+</html>
